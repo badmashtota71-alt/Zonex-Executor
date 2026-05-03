@@ -152,3 +152,4 @@ Instance.new("UICorner", FloatingIcon).CornerRadius = UDim.new(1, 0)
 
 FloatingIcon.MouseButton1Click:Connect(function() MainFrame.Visible = true FloatingIcon.Visible = false end)
 ShowTab(HomeTab)
+
