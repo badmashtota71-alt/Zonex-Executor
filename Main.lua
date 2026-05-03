@@ -1,4 +1,4 @@
--- Zonex Executor v4.1 (Fully Restored & Fixed)
+-- Zonex Executor v4.1 (High-Speed 8-Stud Farm)
 local ScreenGui = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
 local Sidebar = Instance.new("Frame")
@@ -61,15 +61,7 @@ for _, tab in pairs(tabs) do
     end
 end
 
--- Home Tab
-local WelcomeText = Instance.new("TextLabel", HomeTab)
-WelcomeText.Size = UDim2.new(1,0,1,0)
-WelcomeText.Text = "ZONEX v4.1\n\nStatus: Keyless\nSelect a tab to begin."
-WelcomeText.TextColor3 = Color3.fromRGB(200, 200, 200)
-WelcomeText.BackgroundTransparency = 1
-WelcomeText.Font = Enum.Font.Gotham
-
--- Editor Tab
+-- Editor Logic
 local TextBox = Instance.new("TextBox", EditorTab)
 TextBox.Size = UDim2.new(1, 0, 0, 200)
 TextBox.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
@@ -91,20 +83,7 @@ ExecBtn.Font = Enum.Font.GothamBold
 Instance.new("UICorner", ExecBtn)
 ExecBtn.MouseButton1Click:Connect(function() loadstring(TextBox.Text)() end)
 
--- Hub Tab Content
-local function addHubScript(name, code)
-    local btn = Instance.new("TextButton", HubTab)
-    btn.Size = UDim2.new(1, 0, 0, 40)
-    btn.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.Text = name
-    btn.Font = Enum.Font.Gotham
-    Instance.new("UICorner", btn)
-    btn.MouseButton1Click:Connect(function() loadstring(game:HttpGet(code))() end)
-end
-addHubScript("Infinite Yield", "https://githubusercontent.com")
-
--- Blox Fruits Tab Logic
+-- Toggle Helper
 local function addToggle(name, parent, callback)
     local btn = Instance.new("TextButton", parent)
     btn.Size = UDim2.new(1, 0, 0, 40)
@@ -123,35 +102,69 @@ local function addToggle(name, parent, callback)
     end)
 end
 
+-- NO-CLIP LOGIC
+local noclipConnection
+local function ToggleNoclip(state)
+    if state then
+        noclipConnection = game:GetService("RunService").Stepped:Connect(function()
+            if game.Players.LocalPlayer.Character then
+                for _, part in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = false
+                    end
+                end
+            end
+        end)
+    else
+        if noclipConnection then noclipConnection:Disconnect() end
+    end
+end
+
+-- SPEED FARM LOGIC (Locked 8 Studs + High Speed)
 local farming = false
 addToggle("Farm npc and players (8 Studs Above)", BloxTab, function(state)
     farming = state
+    ToggleNoclip(state)
     task.spawn(function()
+        local lp = game.Players.LocalPlayer
         while farming do
-            local lp = game.Players.LocalPlayer
             local char = lp.Character
             if char and char:FindFirstChild("HumanoidRootPart") then
-                local targetPos, dist = nil, math.huge
+                local targetHRP = nil
+                local dist = math.huge
+                
                 for _, v in pairs(workspace:GetDescendants()) do
-                    if v:IsA("Humanoid") and v.Parent and v.Parent ~= char then
+                    if v:IsA("Humanoid") and v.Parent and v.Parent ~= char and v.Health > 0 then
                         local hrp = v.Parent:FindFirstChild("HumanoidRootPart")
-                        if hrp and v.Health > 0 then
+                        if hrp then
                             local h = math.floor(v.Health)
-                            if not (string.find(v.Parent.Name, "Dummy") and (h == 90 or h == 91 or h == 92)) then
+                            if not (string.find(v.Parent.Name, "Dummy") and (h >= 90 and h <= 92)) then
                                 local m = (hrp.Position - char.HumanoidRootPart.Position).Magnitude
-                                if m < dist then dist = m targetPos = hrp.Position end
+                                if m < dist then dist = m targetHRP = hrp end
                             end
                         end
                     end
                 end
-                if targetPos then char.HumanoidRootPart.CFrame = CFrame.new(targetPos + Vector3.new(0, 8, 0)) end
+                
+                if targetHRP then
+                    -- Fixed 8 studs above the target's exact head position
+                    local goalPosition = targetHRP.Position + Vector3.new(0, 8, 0)
+                    local currentPosition = char.HumanoidRootPart.Position
+                    
+                    -- Increased Move Speed (Magnitude check makes it move faster if far away)
+                    local direction = (goalPosition - currentPosition)
+                    if direction.Magnitude > 0.1 then
+                        -- Moves you 3 studs per step (Very Fast)
+                        char.HumanoidRootPart.CFrame = CFrame.new(currentPosition + (direction.Unit * math.min(direction.Magnitude, 3)))
+                    end
+                end
             end
-            task.wait(0.03)
+            task.wait(0.01) -- Much faster loop refresh
         end
     end)
 end)
 
--- Sidebar Navigation
+-- Sidebar Buttons
 local function createNav(name, pos, func)
     local btn = Instance.new("TextButton", Sidebar)
     btn.Size = UDim2.new(0.9, 0, 0, 35)
@@ -170,7 +183,7 @@ createNav("HUB", UDim2.new(0.05, 0, 0.5, 0), function() ShowTab(HubTab) end)
 createNav("BLOX FRUITS", UDim2.new(0.05, 0, 0.65, 0), function() ShowTab(BloxTab) end)
 createNav("CLOSE", UDim2.new(0.05, 0, 0.85, 0), function() MainFrame.Visible = false FloatingIcon.Visible = true end)
 
--- Floating Icon
+-- Floating Icon Setup
 FloatingIcon.Parent = ScreenGui
 FloatingIcon.Position = UDim2.new(0, 20, 0.5, 0)
 FloatingIcon.Size = UDim2.new(0, 50, 0, 50)
