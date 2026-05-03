@@ -1,199 +1,170 @@
--- Zonex Executor v4.1 (High-Speed 8-Stud Farm)
-local ScreenGui = Instance.new("ScreenGui")
-local MainFrame = Instance.new("Frame")
-local Sidebar = Instance.new("Frame")
-local Title = Instance.new("TextLabel")
-local FloatingIcon = Instance.new("TextButton")
+-- Zonex Executor v4.1 (Optimized 7-Stud Height)
+local Players = game:GetService("Players")
+local lp = Players.LocalPlayer
 
--- Tabs
-local HomeTab = Instance.new("Frame")
-local EditorTab = Instance.new("Frame")
-local HubTab = Instance.new("ScrollingFrame")
-local BloxTab = Instance.new("ScrollingFrame")
+-- 1. CLEANUP OLD UI
+if lp.PlayerGui:FindFirstChild("ZonexMainGui") then lp.PlayerGui.ZonexMainGui:Destroy() end
 
--- Setup UI Base
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+local ScreenGui = Instance.new("ScreenGui", lp:WaitForChild("PlayerGui"))
+ScreenGui.Name = "ZonexMainGui"
 ScreenGui.ResetOnSpawn = false
 
-MainFrame.Name = "ZonexMain"
-MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+-- 2. FLOATING RE-OPEN ICON
+local FloatingIcon = Instance.new("TextButton", ScreenGui)
+FloatingIcon.Size = UDim2.new(0, 50, 0, 50)
+FloatingIcon.Position = UDim2.new(0, 20, 0.5, 0)
+FloatingIcon.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+FloatingIcon.Text = "Z"
+FloatingIcon.TextColor3 = Color3.fromRGB(0, 255, 180)
+FloatingIcon.Font = Enum.Font.GothamBold
+FloatingIcon.Visible = false
+FloatingIcon.Draggable = true
+Instance.new("UICorner", FloatingIcon).CornerRadius = UDim.new(1, 0)
+
+-- 3. MAIN UI
+local MainFrame = Instance.new("Frame", ScreenGui)
+MainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 12)
 MainFrame.Position = UDim2.new(0.5, -250, 0.5, -150)
 MainFrame.Size = UDim2.new(0, 500, 0, 300)
 MainFrame.Active = true
 MainFrame.Draggable = true
 Instance.new("UICorner", MainFrame)
 
-Sidebar.Parent = MainFrame
-Sidebar.BackgroundColor3 = Color3.fromRGB(28, 28, 33)
+local Sidebar = Instance.new("Frame", MainFrame)
+Sidebar.BackgroundColor3 = Color3.fromRGB(5, 5, 7)
 Sidebar.Size = UDim2.new(0, 120, 1, 0)
 Instance.new("UICorner", Sidebar)
 
-Title.Parent = Sidebar
-Title.Size = UDim2.new(1, 0, 0, 60)
-Title.Text = "ZONEX"
-Title.TextColor3 = Color3.fromRGB(0, 255, 180)
-Title.Font = Enum.Font.GothamBold
-Title.TextSize = 24
+local Logo = Instance.new("TextLabel", Sidebar)
+Logo.Size = UDim2.new(1, 0, 0, 50)
+Logo.Text = "ZONEX"; Logo.TextColor3 = Color3.fromRGB(0, 255, 180)
+Logo.Font = Enum.Font.GothamBold; Logo.TextSize = 26; Logo.BackgroundTransparency = 1
 
--- FUNCTION TO SWITCH TABS
-local function ShowTab(tabToShow)
-    HomeTab.Visible = false
-    EditorTab.Visible = false
-    HubTab.Visible = false
-    BloxTab.Visible = false
-    tabToShow.Visible = true
-end
+-- 4. TABS
+local HomeTab = Instance.new("Frame", MainFrame)
+local EditorTab = Instance.new("Frame", MainFrame)
+local BloxTab = Instance.new("ScrollingFrame", MainFrame)
 
--- Setup Tab Containers
-local tabs = {HomeTab, EditorTab, HubTab, BloxTab}
-for _, tab in pairs(tabs) do
-    tab.Parent = MainFrame
-    tab.Size = UDim2.new(1, -140, 1, -20)
-    tab.Position = UDim2.new(0, 130, 0, 10)
-    tab.BackgroundTransparency = 1
-    tab.Visible = false
+local function SetupTab(tab)
+    tab.Size = UDim2.new(1, -140, 1, -20); tab.Position = UDim2.new(0, 130, 0, 10)
+    tab.BackgroundTransparency = 1; tab.Visible = false
     if tab:IsA("ScrollingFrame") then
         tab.CanvasSize = UDim2.new(0,0,2,0)
-        tab.ScrollBarThickness = 2
-        local layout = Instance.new("UIListLayout", tab)
-        layout.Padding = UDim.new(0,5)
+        Instance.new("UIListLayout", tab).Padding = UDim.new(0,5)
     end
 end
+SetupTab(HomeTab); SetupTab(EditorTab); SetupTab(BloxTab)
 
--- Editor Logic
+local function ShowTab(t)
+    HomeTab.Visible = false; EditorTab.Visible = false; BloxTab.Visible = false
+    t.Visible = true
+end
+
+-- 5. EDITOR
 local TextBox = Instance.new("TextBox", EditorTab)
-TextBox.Size = UDim2.new(1, 0, 0, 200)
-TextBox.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
-TextBox.Text = "-- Paste Script Here"
-TextBox.MultiLine = true
-TextBox.ClearTextOnFocus = false
-TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-TextBox.Font = Enum.Font.Code
-TextBox.TextXAlignment = "Left"
-TextBox.TextYAlignment = "Top"
+TextBox.Size = UDim2.new(1, 0, 0, 200); TextBox.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+TextBox.Text = "-- Paste Script Here"; TextBox.MultiLine = true; TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextBox.Font = Enum.Font.Code; TextBox.ClearTextOnFocus = false; TextBox.TextXAlignment = "Left"; TextBox.TextYAlignment = "Top"
 Instance.new("UICorner", TextBox)
 
 local ExecBtn = Instance.new("TextButton", EditorTab)
-ExecBtn.Size = UDim2.new(1, 0, 0, 40)
-ExecBtn.Position = UDim2.new(0, 0, 0, 210)
-ExecBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 180)
-ExecBtn.Text = "EXECUTE"
-ExecBtn.Font = Enum.Font.GothamBold
+ExecBtn.Size = UDim2.new(1, 0, 0, 40); ExecBtn.Position = UDim2.new(0, 0, 0, 210)
+ExecBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 180); ExecBtn.Text = "EXECUTE"
 Instance.new("UICorner", ExecBtn)
 ExecBtn.MouseButton1Click:Connect(function() loadstring(TextBox.Text)() end)
 
--- Toggle Helper
-local function addToggle(name, parent, callback)
-    local btn = Instance.new("TextButton", parent)
-    btn.Size = UDim2.new(1, 0, 0, 40)
-    btn.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.Text = name .. ": OFF"
-    btn.Font = Enum.Font.Gotham
+-- 6. TOGGLE HELPER
+local function addToggle(name, callback)
+    local btn = Instance.new("TextButton", BloxTab)
+    btn.Size = UDim2.new(1, 0, 0, 40); btn.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255); btn.Text = name .. ": OFF"
     Instance.new("UICorner", btn)
-    
-    local enabled = false
+    local state = false
     btn.MouseButton1Click:Connect(function()
-        enabled = not enabled
-        btn.Text = name .. ": " .. (enabled and "ON" or "OFF")
-        btn.TextColor3 = enabled and Color3.fromRGB(0, 255, 180) or Color3.fromRGB(255, 255, 255)
-        callback(enabled)
+        state = not state
+        btn.Text = name .. ": " .. (state and "ON" or "OFF")
+        btn.TextColor3 = state and Color3.fromRGB(0, 255, 180) or Color3.fromRGB(255, 255, 255)
+        callback(state)
     end)
 end
 
--- NO-CLIP LOGIC
-local noclipConnection
-local function ToggleNoclip(state)
-    if state then
-        noclipConnection = game:GetService("RunService").Stepped:Connect(function()
-            if game.Players.LocalPlayer.Character then
-                for _, part in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
-                    if part:IsA("BasePart") then
-                        part.CanCollide = false
-                    end
-                end
-            end
-        end)
-    else
-        if noclipConnection then noclipConnection:Disconnect() end
-    end
-end
-
--- SPEED FARM LOGIC (Locked 8 Studs + High Speed)
+-- 6a. FARM (7 STUDS UP)
 local farming = false
-addToggle("Farm npc and players (8 Studs Above)", BloxTab, function(state)
-    farming = state
-    ToggleNoclip(state)
+addToggle("Safe Farm (7 Studs Above)", function(s)
+    farming = s
     task.spawn(function()
-        local lp = game.Players.LocalPlayer
         while farming do
-            local char = lp.Character
-            if char and char:FindFirstChild("HumanoidRootPart") then
-                local targetHRP = nil
-                local dist = math.huge
-                
+            pcall(function()
+                local target, dist = nil, math.huge
                 for _, v in pairs(workspace:GetDescendants()) do
-                    if v:IsA("Humanoid") and v.Parent and v.Parent ~= char and v.Health > 0 then
+                    if v:IsA("Humanoid") and v.Parent and v.Parent ~= lp.Character and v.Health > 0 then
                         local hrp = v.Parent:FindFirstChild("HumanoidRootPart")
-                        if hrp then
-                            local h = math.floor(v.Health)
-                            if not (string.find(v.Parent.Name, "Dummy") and (h >= 90 and h <= 92)) then
-                                local m = (hrp.Position - char.HumanoidRootPart.Position).Magnitude
-                                if m < dist then dist = m targetHRP = hrp end
-                            end
+                        if hrp and not (v.Parent.Name:find("Dummy") and v.Health >= 90 and v.Health <= 92) then
+                            local m = (hrp.Position - lp.Character.HumanoidRootPart.Position).Magnitude
+                            if m < dist then dist = m; target = hrp end
                         end
                     end
                 end
-                
-                if targetHRP then
-                    -- Fixed 8 studs above the target's exact head position
-                    local goalPosition = targetHRP.Position + Vector3.new(0, 8, 0)
-                    local currentPosition = char.HumanoidRootPart.Position
-                    
-                    -- Increased Move Speed (Magnitude check makes it move faster if far away)
-                    local direction = (goalPosition - currentPosition)
-                    if direction.Magnitude > 0.1 then
-                        -- Moves you 3 studs per step (Very Fast)
-                        char.HumanoidRootPart.CFrame = CFrame.new(currentPosition + (direction.Unit * math.min(direction.Magnitude, 3)))
-                    end
+                if target then
+                    -- Locked at 7 studs for maximum damage output
+                    lp.Character.HumanoidRootPart.CFrame = CFrame.new(target.Position + Vector3.new(0, 7, 0), target.Position)
+                    lp.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
                 end
-            end
-            task.wait(0.01) -- Much faster loop refresh
+            end)
+            task.wait(0.03)
         end
     end)
 end)
 
--- Sidebar Buttons
-local function createNav(name, pos, func)
-    local btn = Instance.new("TextButton", Sidebar)
-    btn.Size = UDim2.new(0.9, 0, 0, 35)
-    btn.Position = pos
-    btn.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
-    btn.Text = name
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.Font = Enum.Font.Gotham
-    Instance.new("UICorner", btn)
-    btn.MouseButton1Click:Connect(func)
+-- 6b. FLY
+local flying = false
+addToggle("Fly Mode (Camera Dir)", function(s)
+    flying = s
+    task.spawn(function()
+        local bv = Instance.new("BodyVelocity")
+        bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+        while flying do
+            if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+                bv.Parent = lp.Character.HumanoidRootPart
+                local cam = workspace.CurrentCamera
+                if lp.Character.Humanoid.MoveDirection.Magnitude > 0 then
+                    bv.Velocity = cam.CFrame.LookVector * 85
+                else
+                    bv.Velocity = Vector3.new(0, 0, 0)
+                end
+            end
+            task.wait(0.01)
+        end
+        bv:Destroy()
+    end)
+end)
+
+-- 6c. GOD MODE
+addToggle("Infinite Health", function(s)
+    _G.InfHealth = s
+    while _G.InfHealth do
+        pcall(function() lp.Character.Humanoid.Health = lp.Character.Humanoid.MaxHealth end)
+        task.wait()
+    end
+end)
+
+-- 7. NAV
+local function createNav(n, p, f, isClose)
+    local b = Instance.new("TextButton", Sidebar)
+    b.Size = UDim2.new(0.9, 0, 0, 35); b.Position = p
+    b.BackgroundColor3 = isClose and Color3.fromRGB(15, 15, 20) or Color3.fromRGB(20, 20, 25)
+    b.Text = n; b.TextColor3 = Color3.fromRGB(255, 255, 255); Instance.new("UICorner", b)
+    b.MouseButton1Click:Connect(f)
 end
 
-createNav("HOME", UDim2.new(0.05, 0, 0.2, 0), function() ShowTab(HomeTab) end)
-createNav("EDITOR", UDim2.new(0.05, 0, 0.35, 0), function() ShowTab(EditorTab) end)
-createNav("HUB", UDim2.new(0.05, 0, 0.5, 0), function() ShowTab(HubTab) end)
-createNav("BLOX FRUITS", UDim2.new(0.05, 0, 0.65, 0), function() ShowTab(BloxTab) end)
-createNav("CLOSE", UDim2.new(0.05, 0, 0.85, 0), function() MainFrame.Visible = false FloatingIcon.Visible = true end)
+createNav("HOME", UDim2.new(0.05,0,0.2,0), function() ShowTab(HomeTab) end)
+createNav("EDITOR", UDim2.new(0.05,0,0.35,0), function() ShowTab(EditorTab) end)
+createNav("BLOX FRUITS", UDim2.new(0.05,0,0.5,0), function() ShowTab(BloxTab) end)
+createNav("CLOSE", UDim2.new(0.05,0,0.85,0), function() MainFrame.Visible = false; FloatingIcon.Visible = true end, true)
 
--- Floating Icon Setup
-FloatingIcon.Parent = ScreenGui
-FloatingIcon.Position = UDim2.new(0, 20, 0.5, 0)
-FloatingIcon.Size = UDim2.new(0, 50, 0, 50)
-FloatingIcon.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
-FloatingIcon.Text = "Z"
-FloatingIcon.TextColor3 = Color3.fromRGB(0, 255, 180)
-FloatingIcon.Font = Enum.Font.GothamBold
-FloatingIcon.Visible = false
-Instance.new("UICorner", FloatingIcon).CornerRadius = UDim.new(1, 0)
-FloatingIcon.MouseButton1Click:Connect(function() MainFrame.Visible = true FloatingIcon.Visible = false end)
+FloatingIcon.MouseButton1Click:Connect(function()
+    MainFrame.Visible = true; FloatingIcon.Visible = false
+end)
 
 ShowTab(HomeTab)
 
