@@ -1,46 +1,41 @@
--- Zonex Executor v4.1 (Optimized 7-Stud Height)
+-- Zonex Executor v4.1 (Clean God Mode + High-Speed Suite)
 local Players = game:GetService("Players")
 local lp = Players.LocalPlayer
 
--- 1. CLEANUP OLD UI
+-- CLEANUP
 if lp.PlayerGui:FindFirstChild("ZonexMainGui") then lp.PlayerGui.ZonexMainGui:Destroy() end
 
 local ScreenGui = Instance.new("ScreenGui", lp:WaitForChild("PlayerGui"))
 ScreenGui.Name = "ZonexMainGui"
 ScreenGui.ResetOnSpawn = false
 
--- 2. FLOATING RE-OPEN ICON
+-- FLOATING ICON
 local FloatingIcon = Instance.new("TextButton", ScreenGui)
 FloatingIcon.Size = UDim2.new(0, 50, 0, 50)
 FloatingIcon.Position = UDim2.new(0, 20, 0.5, 0)
 FloatingIcon.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
-FloatingIcon.Text = "Z"
-FloatingIcon.TextColor3 = Color3.fromRGB(0, 255, 180)
-FloatingIcon.Font = Enum.Font.GothamBold
-FloatingIcon.Visible = false
-FloatingIcon.Draggable = true
-Instance.new("UICorner", FloatingIcon).CornerRadius = UDim.new(1, 0)
+FloatingIcon.Text = "Z"; FloatingIcon.TextColor3 = Color3.fromRGB(0, 255, 180)
+FloatingIcon.Font = Enum.Font.GothamBold; FloatingIcon.Visible = false
+FloatingIcon.Draggable = true; Instance.new("UICorner", FloatingIcon).CornerRadius = UDim.new(1, 0)
 
--- 3. MAIN UI
+-- MAIN UI
 local MainFrame = Instance.new("Frame", ScreenGui)
 MainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 12)
 MainFrame.Position = UDim2.new(0.5, -250, 0.5, -150)
 MainFrame.Size = UDim2.new(0, 500, 0, 300)
-MainFrame.Active = true
-MainFrame.Draggable = true
+MainFrame.Active = true; MainFrame.Draggable = true
 Instance.new("UICorner", MainFrame)
 
 local Sidebar = Instance.new("Frame", MainFrame)
 Sidebar.BackgroundColor3 = Color3.fromRGB(5, 5, 7)
-Sidebar.Size = UDim2.new(0, 120, 1, 0)
-Instance.new("UICorner", Sidebar)
+Sidebar.Size = UDim2.new(0, 120, 1, 0); Instance.new("UICorner", Sidebar)
 
 local Logo = Instance.new("TextLabel", Sidebar)
-Logo.Size = UDim2.new(1, 0, 0, 50)
-Logo.Text = "ZONEX"; Logo.TextColor3 = Color3.fromRGB(0, 255, 180)
-Logo.Font = Enum.Font.GothamBold; Logo.TextSize = 26; Logo.BackgroundTransparency = 1
+Logo.Size = UDim2.new(1, 0, 0, 50); Logo.Text = "ZONEX"
+Logo.TextColor3 = Color3.fromRGB(0, 255, 180); Logo.Font = Enum.Font.GothamBold
+Logo.TextSize = 26; Logo.BackgroundTransparency = 1
 
--- 4. TABS
+-- TABS Setup
 local HomeTab = Instance.new("Frame", MainFrame)
 local EditorTab = Instance.new("Frame", MainFrame)
 local BloxTab = Instance.new("ScrollingFrame", MainFrame)
@@ -60,7 +55,7 @@ local function ShowTab(t)
     t.Visible = true
 end
 
--- 5. EDITOR
+-- EDITOR (Fixed)
 local TextBox = Instance.new("TextBox", EditorTab)
 TextBox.Size = UDim2.new(1, 0, 0, 200); TextBox.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
 TextBox.Text = "-- Paste Script Here"; TextBox.MultiLine = true; TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -69,16 +64,15 @@ Instance.new("UICorner", TextBox)
 
 local ExecBtn = Instance.new("TextButton", EditorTab)
 ExecBtn.Size = UDim2.new(1, 0, 0, 40); ExecBtn.Position = UDim2.new(0, 0, 0, 210)
-ExecBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 180); ExecBtn.Text = "EXECUTE"
-Instance.new("UICorner", ExecBtn)
+ExecBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 180); ExecBtn.Text = "EXECUTE"; Instance.new("UICorner", ExecBtn)
 ExecBtn.MouseButton1Click:Connect(function() loadstring(TextBox.Text)() end)
 
--- 6. TOGGLE HELPER
+-- TOGGLE HELPER
 local function addToggle(name, callback)
     local btn = Instance.new("TextButton", BloxTab)
     btn.Size = UDim2.new(1, 0, 0, 40); btn.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
     btn.TextColor3 = Color3.fromRGB(255, 255, 255); btn.Text = name .. ": OFF"
-    Instance.new("UICorner", btn)
+    btn.Font = Enum.Font.Gotham; Instance.new("UICorner", btn)
     local state = false
     btn.MouseButton1Click:Connect(function()
         state = not state
@@ -88,7 +82,7 @@ local function addToggle(name, callback)
     end)
 end
 
--- 6a. FARM (7 STUDS UP)
+-- 1. FARM (7 STUDS)
 local farming = false
 addToggle("Safe Farm (7 Studs Above)", function(s)
     farming = s
@@ -99,14 +93,13 @@ addToggle("Safe Farm (7 Studs Above)", function(s)
                 for _, v in pairs(workspace:GetDescendants()) do
                     if v:IsA("Humanoid") and v.Parent and v.Parent ~= lp.Character and v.Health > 0 then
                         local hrp = v.Parent:FindFirstChild("HumanoidRootPart")
-                        if hrp and not (v.Parent.Name:find("Dummy") and v.Health >= 90 and v.Health <= 92) then
+                        if hrp and not (v.Parent.Name:find("Dummy") and v.Health >= 90) then
                             local m = (hrp.Position - lp.Character.HumanoidRootPart.Position).Magnitude
                             if m < dist then dist = m; target = hrp end
                         end
                     end
                 end
                 if target then
-                    -- Locked at 7 studs for maximum damage output
                     lp.Character.HumanoidRootPart.CFrame = CFrame.new(target.Position + Vector3.new(0, 7, 0), target.Position)
                     lp.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
                 end
@@ -116,22 +109,47 @@ addToggle("Safe Farm (7 Studs Above)", function(s)
     end)
 end)
 
--- 6b. FLY
-local flying = false
-addToggle("Fly Mode (Camera Dir)", function(s)
-    flying = s
+-- 2. IMPROVED GOD MODE (REMOVED STUCK PART)
+local UserInput = Instance.new("TextBox", BloxTab)
+UserInput.Size = UDim2.new(1, 0, 0, 30); UserInput.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+UserInput.PlaceholderText = "Username (Empty = You)"; UserInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+Instance.new("UICorner", UserInput)
+
+addToggle("Infinite Health (Target)", function(s)
+    _G.GodState = s
+    local targetName = UserInput.Text
+    local targetPlayer = (targetName == "" and lp) or Players:FindFirstChild(targetName)
+    
+    if targetPlayer and targetPlayer.Character then
+        local hum = targetPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if hum then
+            -- Removed PlatformStand = true to prevent getting stuck
+            hum:SetAttribute("CanTakeDamage", not s)
+            
+            task.spawn(function()
+                while _G.GodState do
+                    if hum then 
+                        hum.Health = hum.MaxHealth 
+                        -- Prevents "died" state even if server lags
+                        if hum.Health <= 0 then hum.Health = 1 end 
+                    end
+                    task.wait()
+                end
+            end)
+        end
+    end
+end)
+
+-- 3. FLY
+addToggle("Fly Mode", function(s)
+    _G.Flying = s
     task.spawn(function()
         local bv = Instance.new("BodyVelocity")
-        bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-        while flying do
+        bv.MaxForce = Vector3.new(1e6, 1e6, 1e6)
+        while _G.Flying do
             if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
                 bv.Parent = lp.Character.HumanoidRootPart
-                local cam = workspace.CurrentCamera
-                if lp.Character.Humanoid.MoveDirection.Magnitude > 0 then
-                    bv.Velocity = cam.CFrame.LookVector * 85
-                else
-                    bv.Velocity = Vector3.new(0, 0, 0)
-                end
+                bv.Velocity = workspace.CurrentCamera.CFrame.LookVector * 80
             end
             task.wait(0.01)
         end
@@ -139,16 +157,7 @@ addToggle("Fly Mode (Camera Dir)", function(s)
     end)
 end)
 
--- 6c. GOD MODE
-addToggle("Infinite Health", function(s)
-    _G.InfHealth = s
-    while _G.InfHealth do
-        pcall(function() lp.Character.Humanoid.Health = lp.Character.Humanoid.MaxHealth end)
-        task.wait()
-    end
-end)
-
--- 7. NAV
+-- NAV
 local function createNav(n, p, f, isClose)
     local b = Instance.new("TextButton", Sidebar)
     b.Size = UDim2.new(0.9, 0, 0, 35); b.Position = p
@@ -167,4 +176,3 @@ FloatingIcon.MouseButton1Click:Connect(function()
 end)
 
 ShowTab(HomeTab)
-
